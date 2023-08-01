@@ -96,7 +96,7 @@ function Cart(props) {
             <h5>Ohooo!</h5>
             <p>
               This cart is empty please go through this button{" "}
-              <a
+              <Link
                 href="/Homepage"
                 role="button"
                 className="btn btn-secondary popover-test"
@@ -105,7 +105,7 @@ function Cart(props) {
                 style={{ width: "200px" }}
               >
                 Shop Now
-              </a>
+              </Link>
             </p>
             <hr />
           </div>
