@@ -9,6 +9,7 @@ const registerSlice = createSlice({
     subitem: 0,
     username: null, // Add username to the initial state
     uid: null, // Add uid to the initial state
+    cartLength: 0,
   },
 
   reducers: {
@@ -72,6 +73,9 @@ const registerSlice = createSlice({
         }
       }
     },
+    updateCartLength: (state, action) => {
+      state.cartLength = action.payload; // Update the cart length in the state with the new value
+    },
   },
 });
 
@@ -83,6 +87,7 @@ export const {
   decrement,
   increment,
   removecart,
+  updateCartLength,
 } = registerSlice.actions;
 
 export default registerSlice.reducer;

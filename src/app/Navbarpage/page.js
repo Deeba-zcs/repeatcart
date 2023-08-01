@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { BsFillCartPlusFill } from "react-icons/bs";
 import { useDispatch } from "react-redux";
-import { logout } from "src/app/Store/registerslice.js"; // Import the logout action
+import { logout, updateCartLength } from "src/app/Store/registerslice.js"; // Import the logout action
 import React, { useEffect, useState } from "react";
 
 function Navbarpage() {
@@ -26,16 +26,18 @@ function Navbarpage() {
     setlogindata(userdatalogo);
   }, []);
 
-  const cartItemsOfLoggedInUser = useSelector((state) =>
-    state.signup.cart.filter((item) => item?.userid === details?.id)
+  const cartItemsOfLoggedInUser = cart.filter(
+    (item) => item?.userid === details?.id
   );
-
-  console.log("cartItemsOfLoggedInUser", cartItemsOfLoggedInUser);
-
   const cartLengthLoggedInUser = cartItemsOfLoggedInUser.reduce(
     (total, item) => total + item?.quantity,
     0
   );
+
+  useEffect(() => {
+    // Update the cart length in the Redux store whenever the cart items change
+    dispatch(updateCartLength(cartLengthLoggedInUser));
+  }, [cartLengthLoggedInUser]);
 
   console.log("nvlen", cartLength);
   const handleLogout = () => {
