@@ -12,9 +12,10 @@ function Productpage() {
   const dispatch = useDispatch();
   const [cartItems, setCartItems] = useState([]);
   const [items, setItems] = useState([]);
-
+  const userCartItems = useSelector((state) =>
+    state.signup.cart.filter((item) => item.userid === currentUser?.id)
+  );
   useEffect(() => {
-    // Fetch products from the API and store them in the state
     fetch("https://fakestoreapi.com/products")
       .then((data) => data.json())
       .then((result) => setItems(result));
@@ -70,7 +71,7 @@ function Productpage() {
   };
 
   const cards = items.slice(0, 20).map((product) => {
-    const cartItem = cartItems.find((item) => item.id === product.id);
+    const cartItem = userCartItems.find((item) => item.id === product.id);
     return (
       <div className="col-lg-3 mt-3" key={product.id}>
         <Card className="h-100">
