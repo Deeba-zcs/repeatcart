@@ -18,11 +18,21 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 function Cart(props) {
+  const pathname = usePathname();
   const router = useRouter();
   const dispatch = useDispatch();
   const [cartItems, setCartItems] = useState([]);
+  const [storedata, setStoredata] = useState([]);
   const loggedInUser = useSelector((state) => state.signup.currentUser);
 
+  console.log("cartItems", cartItems);
+  // const proceedtobuy=()=>{
+  //   if(!loggedInUser || !registeredUsers){
+  //   router.push('/login')}
+  // else{
+  //   router.push('/')
+  // }
+  //}
   const subtotal = () => {
     let total = 0;
     cartItems.forEach((item) => {
@@ -33,21 +43,31 @@ function Cart(props) {
 
   const mycart = useSelector((state) => state.signup.cart);
 
+  console.log("mycart", mycart);
+
   useEffect(() => {
     if (!loggedInUser) {
-      // If the user is not logged in, redirect them to the login page or do something else
-      router.push("/login");
     } else {
-      const carts = mycart.filter((item) => item?.userid === loggedInUser.id);
-      setCartItems(carts);
+      mycart.map((d) => {
+        console.log("mycart.userid", d?.userid);
+        console.log("loggedInUserd.id", loggedInUser.id);
+        if (d?.userid === loggedInUser.id) {
+          const carts = mycart.filter(
+            (item) => item?.userid === loggedInUser.id
+          );
+          setCartItems(carts);
+          //  dispatch(updatecart(carts))
+          console.log("idsofcartcheckmap", carts);
+        }
+      });
     }
-  }, [loggedInUser, mycart, router]);
+  }, []);
+  console.log("cartItems", cartItems);
 
   const removeProductFromCart = (id) => {
     dispatch(removecart(id));
     setCartItems(cartItems.filter((item) => item.id !== id));
   };
-
   const incrementquantity = (id) => {
     dispatch(increment(id));
     setCartItems((prevCartItems) =>
@@ -56,7 +76,6 @@ function Cart(props) {
       )
     );
   };
-
   const decrementquantity = (id) => {
     dispatch(decrement(id));
     setCartItems((prevCartItems) =>
@@ -67,7 +86,6 @@ function Cart(props) {
       )
     );
   };
-
   return (
     <>
       {console.log("cartitemcartpage", cartItems)}

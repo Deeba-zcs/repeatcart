@@ -12,9 +12,7 @@ function Productpage() {
   const dispatch = useDispatch();
   const [cartItems, setCartItems] = useState([]);
   const [items, setItems] = useState([]);
-  const userCartItems = useSelector((state) =>
-    state.signup.cart.filter((item) => item.userid === currentUser?.id)
-  );
+
   useEffect(() => {
     fetch("https://fakestoreapi.com/products")
       .then((data) => data.json())
@@ -22,7 +20,6 @@ function Productpage() {
   }, []);
 
   useEffect(() => {
-    // Filter cart items for the specific user
     if (currentUser) {
       const userCartItems = cartItemsFromRedux.filter(
         (item) => item.userid === currentUser.id
@@ -71,7 +68,7 @@ function Productpage() {
   };
 
   const cards = items.slice(0, 20).map((product) => {
-    const cartItem = userCartItems.find((item) => item.id === product.id);
+    const cartItem = cartItems.find((item) => item.id === product.id);
     return (
       <div className="col-lg-3 mt-3" key={product.id}>
         <Card className="h-100">
