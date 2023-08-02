@@ -1,12 +1,14 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addCart } from "src/app/Store/registerslice.js";
+import { addCart, increment, decrement } from "src/app/Store/registerslice.js";
 import { Card, Button } from "react-bootstrap";
 import { AiOutlinePlus, AiOutlineMinus } from "react-icons/ai";
-import { increment, decrement } from "src/app/Store/registerslice.js";
+import Link from "next/link";
+
 function Productpage() {
   const currentUser = useSelector((state) => state.signup.currentUser);
+  const cartItemsFromRedux = useSelector((state) => state.signup.cart);
   const dispatch = useDispatch();
   const [cartItems, setCartItems] = useState([]);
   const [items, setItems] = useState([]);
@@ -18,24 +20,35 @@ function Productpage() {
       .then((result) => setItems(result));
   }, []);
 
+  useEffect(() => {
+    // Filter cart items for the specific user
+    if (currentUser) {
+      const userCartItems = cartItemsFromRedux.filter(
+        (item) => item.userid === currentUser.id
+      );
+      setCartItems(userCartItems);
+    }
+  }, [currentUser, cartItemsFromRedux]);
+
   const addtocart = (product) => {
     if (currentUser) {
-      dispatch(addCart({ userid: currentUser.id, product }));
       const existingItem = cartItems.find((item) => item.id === product.id);
       if (existingItem) {
-        // Increment quantity if the product is already in the cart
-        setCartItems(
-          cartItems.map((item) =>
-            item.id === product.id
+        dispatch(increment(existingItem.id));
+        setCartItems((prevCartItems) =>
+          prevCartItems.map((item) =>
+            item.id === existingItem.id
               ? { ...item, quantity: item.quantity + 1 }
               : item
           )
         );
       } else {
+        dispatch(addCart({ userid: currentUser.id, product }));
         setCartItems([...cartItems, { ...product, quantity: 1 }]);
       }
     }
   };
+
   const incrementquantity = (id) => {
     dispatch(increment(id));
     setCartItems((prevCartItems) =>
@@ -44,6 +57,7 @@ function Productpage() {
       )
     );
   };
+
   const decrementquantity = (id) => {
     dispatch(decrement(id));
     setCartItems((prevCartItems) =>
@@ -54,6 +68,7 @@ function Productpage() {
       )
     );
   };
+
   const cards = items.slice(0, 20).map((product) => {
     const cartItem = cartItems.find((item) => item.id === product.id);
     return (
@@ -76,17 +91,17 @@ function Productpage() {
             <Card.Footer className="text-center">
               <div>
                 <button
-                  className="btn btn-primary "
-                  onClick={() => incrementquantity(product.id)}
+                  className="btn btn-primary px-3 py-1"
+                  onClick={() => decrementquantity(cartItem.id)}
                 >
-                  <AiOutlinePlus />
+                  <AiOutlineMinus />
                 </button>
                 <span className="m-3">{cartItem.quantity}</span>
                 <button
                   className="btn btn-primary px-3 py-1"
-                  onClick={() => decrementquantity(product.id)}
+                  onClick={() => incrementquantity(cartItem.id)}
                 >
-                  <AiOutlineMinus />
+                  <AiOutlinePlus />
                 </button>
               </div>
             </Card.Footer>
@@ -109,6 +124,7 @@ function Productpage() {
   return (
     <>
       <div>Product Dashboard</div>
+
       <div className="cards-container" style={{ overflowX: "hidden" }}>
         <div className="row">{cards}</div>
       </div>

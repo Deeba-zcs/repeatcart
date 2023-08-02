@@ -18,21 +18,11 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 function Cart(props) {
-  const pathname = usePathname();
   const router = useRouter();
   const dispatch = useDispatch();
   const [cartItems, setCartItems] = useState([]);
-  const [storedata, setStoredata] = useState([]);
   const loggedInUser = useSelector((state) => state.signup.currentUser);
 
-  console.log("cartItems", cartItems);
-  // const proceedtobuy=()=>{
-  //   if(!loggedInUser || !registeredUsers){
-  //   router.push('/login')}
-  // else{
-  //   router.push('/')
-  // }
-  //}
   const subtotal = () => {
     let total = 0;
     cartItems.forEach((item) => {
@@ -43,31 +33,21 @@ function Cart(props) {
 
   const mycart = useSelector((state) => state.signup.cart);
 
-  console.log("mycart", mycart);
-
   useEffect(() => {
     if (!loggedInUser) {
+      // If the user is not logged in, redirect them to the login page or do something else
+      router.push("/login");
     } else {
-      mycart.map((d) => {
-        console.log("mycart.userid", d?.userid);
-        console.log("loggedInUserd.id", loggedInUser.id);
-        if (d?.userid === loggedInUser.id) {
-          const carts = mycart.filter(
-            (item) => item?.userid === loggedInUser.id
-          );
-          setCartItems(carts);
-          //  dispatch(updatecart(carts))
-          console.log("idsofcartcheckmap", carts);
-        }
-      });
+      const carts = mycart.filter((item) => item?.userid === loggedInUser.id);
+      setCartItems(carts);
     }
-  }, []);
-  console.log("cartItems", cartItems);
+  }, [loggedInUser, mycart, router]);
 
   const removeProductFromCart = (id) => {
     dispatch(removecart(id));
     setCartItems(cartItems.filter((item) => item.id !== id));
   };
+
   const incrementquantity = (id) => {
     dispatch(increment(id));
     setCartItems((prevCartItems) =>
@@ -76,6 +56,7 @@ function Cart(props) {
       )
     );
   };
+
   const decrementquantity = (id) => {
     dispatch(decrement(id));
     setCartItems((prevCartItems) =>
@@ -86,10 +67,11 @@ function Cart(props) {
       )
     );
   };
+
   return (
     <>
       {console.log("cartitemcartpage", cartItems)}
-
+      <Link href="/Product">back to product</Link>;
       {cartItems.length === 0 ? (
         <>
           <div className="modal-body">
@@ -97,7 +79,7 @@ function Cart(props) {
             <p>
               This cart is empty please go through this button{" "}
               <Link
-                href="/Homepage"
+                href="/Product"
                 role="button"
                 className="btn btn-secondary popover-test"
                 title="Popover title"
@@ -190,7 +172,6 @@ function Cart(props) {
           </div>
         </>
       )}
-
       {/* <Button
                         variant="primary"
                         className="text-center"
