@@ -55,10 +55,12 @@ const registerSlice = createSlice({
       const productIdToRemove = action.payload;
       state.cart = state.cart.filter((item) => item.id !== productIdToRemove);
     },
-    increment: (state, action) => {
-      console.log("state3", state);
+    increment(state, action) {
       const productId = action.payload;
-      const existingProduct = state.cart.find((item) => item.id === productId);
+      const existingProduct = state.cart.find(
+        (item) => item.id === productId && item.userid === state.currentUser.id
+      );
+
       if (existingProduct) {
         existingProduct.quantity += 1;
       }
@@ -66,9 +68,12 @@ const registerSlice = createSlice({
 
     decrement(state, action) {
       const productId = action.payload;
-      const existingProduct = state.cart.find((item) => item.id === productId);
+      const existingProduct = state.cart.find(
+        (item) => item.id === productId && item.userid === state.currentUser.id
+      );
+
       if (existingProduct) {
-        if (existingProduct.quantity > 1) {
+        if (existingProduct.quantity > 0) {
           existingProduct.quantity -= 1;
         }
       }

@@ -48,27 +48,32 @@ function Productpage() {
   };
 
   const incrementquantity = (id) => {
-    dispatch(increment(id));
-    setCartItems((prevCartItems) =>
-      prevCartItems.map((item) =>
-        item.id === id ? { ...item, quantity: item.quantity + 1 } : item
-      )
-    );
-  };
+    if (currentUser) {
+      const existingItem = cartItems.find(
+        (item) => item.id === id && item.userid === currentUser.id
+      );
 
+      if (existingItem) {
+        dispatch(increment(id)); // Dispatch the increment action for the current user's cart item
+      }
+    }
+  };
   const decrementquantity = (id) => {
-    dispatch(decrement(id));
-    setCartItems((prevCartItems) =>
-      prevCartItems.map((item) =>
-        item.id === id
-          ? { ...item, quantity: Math.max(item.quantity - 1, 1) }
-          : item
-      )
-    );
-  };
+    if (currentUser) {
+      const userCartItem = cartItems.find(
+        (item) => item.id === id && item.userid === currentUser.id
+      );
 
+      if (userCartItem) {
+        dispatch(decrement(id)); // Dispatch the decrement action for the current user's cart item
+      }
+    }
+  };
   const cards = items.slice(0, 20).map((product) => {
-    const cartItem = cartItems.find((item) => item.id === product.id);
+    const cartItem = cartItems.find(
+      (item) => item.id === product.id && item.userid === currentUser?.id
+    ) || { quantity: 0 };
+
     return (
       <div className="col-lg-3 mt-3" key={product.id}>
         <Card className="h-100">
@@ -85,7 +90,7 @@ function Productpage() {
               <Card.Text>INR: {product.price}</Card.Text>
             </div>
           </Card.Body>
-          {cartItem ? (
+          {cartItem.quantity > 0 ? ( // Check if quantity is greater than 0
             <Card.Footer className="text-center">
               <div>
                 <button
